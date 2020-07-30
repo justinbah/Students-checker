@@ -1,6 +1,7 @@
 package dao;
 
 import bean.Classe;
+import bean.Profil;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,45 +10,45 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOClasse implements DAO<Classe>{
-    private static DAOClasse instance;
+public class DAOProfil implements DAO<Profil>{
+    private static DAOProfil instance;
     private Connection conn;
     private PreparedStatement ps = null;
     private ResultSet rs = null;
     private Statement st = null;
-    private final static Logger LOG = LogManager.getLogger(DAOClasse.class);
+    private final static Logger LOG = LogManager.getLogger(DAOProfil.class);
 
-    private DAOClasse() {
+    private DAOProfil() {
         this.conn = ConnexionBdd.getInstance();
     }
 
     /**
      * Return a singleton of the DAO
      */
-    public static DAOClasse getInstance() {
+    public static DAOProfil getInstance() {
         if (null == instance)
-            instance = new DAOClasse();
+            instance = new DAOProfil();
         return instance;
     }
 
-    public Classe create(Classe classe) {
-        LOG.debug("Debut create Classe");
-        Classe classeToReturn = classe;
+    public Profil create(Profil profil) {
+        LOG.debug("Debut create Profil");
+        Profil profilToReturn = profil;
         try {
             String sql = "";
 
-            sql = "INSERT INTO classe (nom) VALUES (?);";
+            sql = "INSERT INTO profil (libelle) VALUES (?);";
             ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            ps.setObject(1,classe.getNom(), Types.INTEGER);
+            ps.setObject(1,profil.getLibelle(), Types.INTEGER);
 
             ps.executeUpdate();
 
             ResultSet generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
-                classeToReturn.setIdClasse(generatedKeys.getInt(1));
+                profilToReturn.setIdProfil(generatedKeys.getInt(1));
             }
             else {
-                throw new SQLException("Creating classe failed, no ID obtained.");
+                throw new SQLException("Creating profil failed, no ID obtained.");
             }
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
@@ -60,25 +61,25 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin create Classe");
-        return classeToReturn;
+        LOG.debug("Fin create Profil");
+        return profilToReturn;
     }
 
-    public Classe getById(Integer id) {
-        LOG.debug("Debut getById Classe");
-        Classe classeToReturn = new Classe();
+    public Profil getById(Integer id) {
+        LOG.debug("Debut getById Profil");
+        Profil profilToReturn = new Profil();
         try {
-            String sql = "SELECT * FROM classe WHERE idClasse = ?";
+            String sql = "SELECT * FROM profil WHERE idProfil = ?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,id,Types.INTEGER);
             rs = ps.executeQuery();
 
             while(rs.next()) {
-                classeToReturn.setIdClasse(rs.getInt("idClasse"));
-                classeToReturn.setNom(rs.getString("nom"));
+                profilToReturn.setIdProfil(rs.getInt("idProfil"));
+                profilToReturn.setLibelle(rs.getString("libelle"));
             }
-            LOG.debug("Fin getById Classe");
-            return classeToReturn;
+            LOG.debug("Fin getById Profil");
+            return profilToReturn;
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
         } catch (Exception e) {
@@ -95,26 +96,26 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin getById Classe");
+        LOG.debug("Fin getById Profil");
         return null;
     }
 
-    public List<Classe> getAll() {
-        LOG.debug("Debut getAll Classe");
-        List<Classe> listeClasses = new ArrayList<Classe>();
+    public List<Profil> getAll() {
+        LOG.debug("Debut getAll Profil");
+        List<Profil> listeProfils = new ArrayList<Profil>();
         try {
-            String sql = "SELECT * FROM classe";
+            String sql = "SELECT * FROM profil";
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
             while(rs.next()) {
-                Classe classeToReturn = new Classe();
-                classeToReturn.setIdClasse(rs.getInt("idClasse"));
-                classeToReturn.setNom(rs.getString("nom"));
-                listeClasses.add(classeToReturn);
+                Profil profilToReturn = new Profil();
+                profilToReturn.setIdProfil(rs.getInt("idProfil"));
+                profilToReturn.setLibelle(rs.getString("libelle"));
+                listeProfils.add(profilToReturn);
             }
-            LOG.debug("Fin getAll Classe");
-            return listeClasses;
+            LOG.debug("Fin getAll Profil");
+            return listeProfils;
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
         } catch (Exception e) {
@@ -131,18 +132,18 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin getAll Classe");
+        LOG.debug("Fin getAll Profil");
         return null;
     }
 
-    public void update(Classe classe) {
-        LOG.debug("Debut udpate Classe");
+    public void update(Profil profil) {
+        LOG.debug("Debut udpate Profil");
         try {
-            String sql = "UPDATE classe SET nom = ? WHERE idClasse = ?";
+            String sql = "UPDATE profil SET libelle = ? WHERE idProfil = ?";
             ps = conn.prepareStatement(sql);
 
-            ps.setObject(1,classe.getNom(), Types.VARCHAR);
-            ps.setObject(2,classe.getIdClasse(),Types.INTEGER);
+            ps.setObject(1,profil.getLibelle(), Types.VARCHAR);
+            ps.setObject(2,profil.getIdProfil(),Types.INTEGER);
 
             ps.executeUpdate();
         }  catch(SQLException se) {
@@ -156,13 +157,13 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin udpate Classe");
+        LOG.debug("Fin udpate Profil");
     }
 
     public void delete(Integer id) {
-        LOG.debug("Debut delete Classe");
+        LOG.debug("Debut delete Profil");
         try {
-            String sql = "DELETE FROM classe WHERE idClasse = ?";
+            String sql = "DELETE FROM profil WHERE idProfil = ?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,id,Types.INTEGER);
             ps.executeUpdate();
@@ -177,6 +178,6 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin delete Classe");
+        LOG.debug("Fin delete Profil");
     }
 }

@@ -1,6 +1,7 @@
 package dao;
 
-import bean.Classe;
+import bean.Eleve;
+import bean.User;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,45 +10,49 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOClasse implements DAO<Classe>{
-    private static DAOClasse instance;
+public class DAOUser implements DAO<User> {
+    private static DAOUser instance;
     private Connection conn;
     private PreparedStatement ps = null;
     private ResultSet rs = null;
     private Statement st = null;
-    private final static Logger LOG = LogManager.getLogger(DAOClasse.class);
+    private final static Logger LOG = LogManager.getLogger(DAOUser.class);
 
-    private DAOClasse() {
+    private DAOUser() {
         this.conn = ConnexionBdd.getInstance();
     }
 
     /**
      * Return a singleton of the DAO
      */
-    public static DAOClasse getInstance() {
+    public static DAOUser getInstance() {
         if (null == instance)
-            instance = new DAOClasse();
+            instance = new DAOUser();
         return instance;
     }
 
-    public Classe create(Classe classe) {
-        LOG.debug("Debut create Classe");
-        Classe classeToReturn = classe;
+    public User create(User user) {
+        LOG.debug("Debut create User");
+        User userToReturn = user;
         try {
             String sql = "";
 
-            sql = "INSERT INTO classe (nom) VALUES (?);";
+            sql = "INSERT INTO user (login,password,nom,prenom,idProfil) VALUES (?,?,?,?,?);";
             ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            ps.setObject(1,classe.getNom(), Types.INTEGER);
+            ps.setObject(1,user.getLogin(), Types.VARCHAR);
+            ps.setObject(2,user.getPassword(), Types.VARCHAR);
+            ps.setObject(3,user.getNom(), Types.VARCHAR);
+            ps.setObject(4,user.getPrenom(), Types.VARCHAR);
+            ps.setObject(6,user.getIdProfil(), Types.INTEGER);
 
             ps.executeUpdate();
 
             ResultSet generatedKeys = ps.getGeneratedKeys();
             if (generatedKeys.next()) {
-                classeToReturn.setIdClasse(generatedKeys.getInt(1));
+                userToReturn.setIdUser(generatedKeys.getInt(1));
             }
             else {
-                throw new SQLException("Creating classe failed, no ID obtained.");
+                throw new SQLException("Creating user failed, no ID obtained.");
             }
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
@@ -60,25 +65,29 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin create Classe");
-        return classeToReturn;
+        LOG.debug("Fin create User");
+        return userToReturn;
     }
 
-    public Classe getById(Integer id) {
-        LOG.debug("Debut getById Classe");
-        Classe classeToReturn = new Classe();
+    public User getById(Integer id) {
+        LOG.debug("Debut getById User");
+        User userToReturn = null;
         try {
-            String sql = "SELECT * FROM classe WHERE idClasse = ?";
+            String sql = "SELECT * FROM user WHERE idUser = ?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,id,Types.INTEGER);
             rs = ps.executeQuery();
 
             while(rs.next()) {
-                classeToReturn.setIdClasse(rs.getInt("idClasse"));
-                classeToReturn.setNom(rs.getString("nom"));
+                userToReturn = new User(rs.getInt("idUser"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getInt("idProfil"));
             }
-            LOG.debug("Fin getById Classe");
-            return classeToReturn;
+            LOG.debug("Fin getById User");
+            return userToReturn;
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
         } catch (Exception e) {
@@ -95,26 +104,29 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin getById Classe");
+        LOG.debug("Fin getById User");
         return null;
     }
 
-    public List<Classe> getAll() {
-        LOG.debug("Debut getAll Classe");
-        List<Classe> listeClasses = new ArrayList<Classe>();
+    public List<User> getAll() {
+        LOG.debug("Debut getAll User");
+        List<User> listeUser = new ArrayList<User>();
         try {
-            String sql = "SELECT * FROM classe";
+            String sql = "SELECT * FROM user";
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
             while(rs.next()) {
-                Classe classeToReturn = new Classe();
-                classeToReturn.setIdClasse(rs.getInt("idClasse"));
-                classeToReturn.setNom(rs.getString("nom"));
-                listeClasses.add(classeToReturn);
+                User userToReturn = new User(rs.getInt("idUser"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getInt("idProfil"));
+                listeUser.add(userToReturn);
             }
-            LOG.debug("Fin getAll Classe");
-            return listeClasses;
+            LOG.debug("Fin getAll User");
+            return listeUser;
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
         } catch (Exception e) {
@@ -131,18 +143,22 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin getAll Classe");
+        LOG.debug("Fin getAll User");
         return null;
     }
 
-    public void update(Classe classe) {
-        LOG.debug("Debut udpate Classe");
+    public void update(User user) {
+        LOG.debug("Debut udpate User");
         try {
-            String sql = "UPDATE classe SET nom = ? WHERE idClasse = ?";
+            String sql = "UPDATE user SET login = ?, password = ?, nom = ?, prenom = ?, idProfil = ? WHERE idUser = ?";
             ps = conn.prepareStatement(sql);
 
-            ps.setObject(1,classe.getNom(), Types.VARCHAR);
-            ps.setObject(2,classe.getIdClasse(),Types.INTEGER);
+            ps.setObject(1,user.getLogin(), Types.VARCHAR);
+            ps.setObject(2,user.getPassword(), Types.VARCHAR);
+            ps.setObject(3,user.getNom(), Types.VARCHAR);
+            ps.setObject(4,user.getPrenom(), Types.VARCHAR);
+            ps.setObject(5,user.getIdProfil(), Types.INTEGER);
+            ps.setObject(6,user.getIdUser(), Types.INTEGER);
 
             ps.executeUpdate();
         }  catch(SQLException se) {
@@ -156,13 +172,13 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin udpate Classe");
+        LOG.debug("Fin udpate User");
     }
 
     public void delete(Integer id) {
-        LOG.debug("Debut delete Classe");
+        LOG.debug("Debut delete User");
         try {
-            String sql = "DELETE FROM classe WHERE idClasse = ?";
+            String sql = "DELETE FROM user WHERE idUser = ?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,id,Types.INTEGER);
             ps.executeUpdate();
@@ -177,6 +193,6 @@ public class DAOClasse implements DAO<Classe>{
                 LOG.warn(e.getMessage());
             }
         }
-        LOG.debug("Fin delete Classe");
+        LOG.debug("Fin delete User");
     }
 }

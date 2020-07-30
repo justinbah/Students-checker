@@ -13,6 +13,10 @@ public class Classe {
         this.nom = nom;
     }
 
+    public Classe() {
+
+    }
+
     public Integer getIdClasse() {
         return idClasse;
     }

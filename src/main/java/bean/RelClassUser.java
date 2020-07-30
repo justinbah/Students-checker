@@ -9,7 +9,8 @@ public class RelClassUser {
         this.idUser = idUser;
     }
 
-
+    public RelClassUser() {
+    }
 
     public Integer getIdUser() {
         return idUser;

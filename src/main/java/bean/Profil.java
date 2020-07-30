@@ -13,6 +13,10 @@ public class Profil {
         this.libelle = libelle;
     }
 
+    public Profil() {
+
+    }
+
     public Integer getIdProfil() {
         return idProfil;
     }
