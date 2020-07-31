@@ -1,5 +1,6 @@
 package buissness;
 
+import bean.Eleve;
 import bean.User;
 import dao.DAOUser;
 
@@ -37,5 +38,13 @@ public class UserManager {
 
     public void delete(Integer id) {
         getDAOUser().delete(id);
+    }
+
+    public User getByUsernameAndPassword(String username, String password) {
+        return getDAOUser().getByUsernameAndPassword(username, password);
+    }
+
+    public List<User> getAllByIdProfil(Integer idProfil) {
+        return getDAOUser().getAllByIdProfil(idProfil);
     }
 }

@@ -38,7 +38,7 @@ public class DAOClasse implements DAO<Classe>{
 
             sql = "INSERT INTO classe (nom) VALUES (?);";
             ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            ps.setObject(1,classe.getNom(), Types.INTEGER);
+            ps.setObject(1,classe.getNom(), Types.VARCHAR);
 
             ps.executeUpdate();
 
@@ -66,8 +66,8 @@ public class DAOClasse implements DAO<Classe>{
 
     public Classe getById(Integer id) {
         LOG.debug("Debut getById Classe");
-        Classe classeToReturn = new Classe();
         try {
+            Classe classeToReturn = new Classe();
             String sql = "SELECT * FROM classe WHERE idClasse = ?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,id,Types.INTEGER);

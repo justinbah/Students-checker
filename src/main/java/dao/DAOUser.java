@@ -43,7 +43,7 @@ public class DAOUser implements DAO<User> {
             ps.setObject(2,user.getPassword(), Types.VARCHAR);
             ps.setObject(3,user.getNom(), Types.VARCHAR);
             ps.setObject(4,user.getPrenom(), Types.VARCHAR);
-            ps.setObject(6,user.getIdProfil(), Types.INTEGER);
+            ps.setObject(5,user.getIdProfil(), Types.INTEGER);
 
             ps.executeUpdate();
 
@@ -194,5 +194,85 @@ public class DAOUser implements DAO<User> {
             }
         }
         LOG.debug("Fin delete User");
+    }
+
+    public User getByUsernameAndPassword(String username, String password) {
+        LOG.debug("Debut getByUsernameAndPassword User");
+        User userToReturn = null;
+        try {
+            String sql = "SELECT * FROM user WHERE login = ? and password = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setObject(1,username);
+            ps.setObject(2,password);
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                userToReturn = new User(rs.getInt("idUser"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getInt("idProfil"));
+            }
+            LOG.debug("Fin getByUsernameAndPassword User");
+            return userToReturn;
+        }  catch(SQLException se) {
+            LOG.error(se.getMessage());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        } finally {
+            try {
+                DbUtils.close(rs);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+            try {
+                DbUtils.close(ps);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+        }
+        LOG.debug("Fin getByUsernameAndPassword User");
+        return null;
+    }
+
+    public List<User> getAllByIdProfil(Integer idProfil) {
+        LOG.debug("Debut getAllByIdProfil User");
+        List<User> listeUser = new ArrayList<User>();
+        try {
+            String sql = "SELECT * FROM user WHERE idProfil = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setObject(1,idProfil,Types.INTEGER);
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                User userToReturn = new User(rs.getInt("idUser"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getInt("idProfil"));
+                listeUser.add(userToReturn);
+            }
+            LOG.debug("Fin getAllByIdProfil User");
+            return listeUser;
+        }  catch(SQLException se) {
+            LOG.error(se.getMessage());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        } finally {
+            try {
+                DbUtils.close(rs);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+            try {
+                DbUtils.close(ps);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+        }
+        LOG.debug("Fin getAllByIdProfil User");
+        return null;
     }
 }

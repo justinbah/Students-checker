@@ -37,14 +37,15 @@ public class DAOEleve implements DAO<Eleve> {
         try {
             String sql = "";
 
-            sql = "INSERT INTO eleve (login,password,nom,prenom,idClasse,idProfil) VALUES (?,?,?,?,?,?);";
+            sql = "INSERT INTO eleve (idUser,login,password,nom,prenom,idClasse,idProfil) VALUES (?,?,?,?,?,?,?);";
             ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            ps.setObject(1,eleve.getLogin(), Types.VARCHAR);
-            ps.setObject(2,eleve.getPassword(), Types.VARCHAR);
-            ps.setObject(3,eleve.getNom(), Types.VARCHAR);
-            ps.setObject(4,eleve.getPrenom(), Types.VARCHAR);
-            ps.setObject(5,eleve.getIdClasse(), Types.INTEGER);
-            ps.setObject(6,eleve.getIdProfil(), Types.INTEGER);
+            ps.setObject(1,eleve.getIdUser(), Types.INTEGER);
+            ps.setObject(2,eleve.getLogin(), Types.VARCHAR);
+            ps.setObject(3,eleve.getPassword(), Types.VARCHAR);
+            ps.setObject(4,eleve.getNom(), Types.VARCHAR);
+            ps.setObject(5,eleve.getPrenom(), Types.VARCHAR);
+            ps.setObject(6,eleve.getIdClasse(), Types.INTEGER);
+            ps.setObject(7,eleve.getIdProfil(), Types.INTEGER);
 
             ps.executeUpdate();
 
@@ -124,8 +125,8 @@ public class DAOEleve implements DAO<Eleve> {
                         rs.getString("password"),
                         rs.getString("nom"),
                         rs.getString("prenom"),
-                        rs.getInt("idClasse"),
-                        rs.getInt("idProfil"));
+                        rs.getInt("idProfil"),
+                        rs.getInt("idClasse"));
                 listeEleve.add(eleveToReturn);
             }
             LOG.debug("Fin getAll Eleve");
@@ -198,5 +199,46 @@ public class DAOEleve implements DAO<Eleve> {
             }
         }
         LOG.debug("Fin delete Eleve");
+    }
+
+    public List<Eleve> getByClasse(Integer idClasse) {
+        LOG.debug("Debut getByClasse Eleve");
+        List<Eleve> listeEleve = new ArrayList<Eleve>();
+        try {
+            String sql = "SELECT * FROM eleve WHERE idClasse = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setObject(1,idClasse,Types.INTEGER);
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                Eleve eleveToReturn = new Eleve(rs.getInt("idUser"),
+                        rs.getString("login"),
+                        rs.getString("password"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getInt("idProfil"),
+                        rs.getInt("idClasse"));
+                listeEleve.add(eleveToReturn);
+            }
+            LOG.debug("Fin getAll Eleve");
+            return listeEleve;
+        }  catch(SQLException se) {
+            LOG.error(se.getMessage());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        } finally {
+            try {
+                DbUtils.close(rs);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+            try {
+                DbUtils.close(ps);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+        }
+        LOG.debug("Fin getByClasse Eleve");
+        return null;
     }
 }

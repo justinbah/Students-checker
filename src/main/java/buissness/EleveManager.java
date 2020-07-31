@@ -38,4 +38,8 @@ public class EleveManager {
     public void delete(Integer id) {
         getDAOEleve().delete(id);
     }
+
+    public List<Eleve> getByClasse(Integer idClasse) {
+        return getDAOEleve().getByClasse(idClasse);
+    }
 }

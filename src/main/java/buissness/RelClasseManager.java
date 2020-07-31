@@ -50,4 +50,8 @@ public class RelClasseManager {
     public void deleteByIdUser(Integer idUser) {
         getDAORelClasseUser().deleteByIdUser(idUser);
     }
+
+    public List<RelClassUser> getAllByIdUser(Integer idUser) {
+        return getDAORelClasseUser().getAllByIdUser(idUser);
+    }
 }

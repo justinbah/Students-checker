@@ -17,13 +17,13 @@ public class User {
         this.Prenom=Prenom;
         this.IdProfil=IdProfil;
     }
-    public User(String login,String Password,String Nom,String Prenom)
+    public User(String login,String Password,String Nom,String Prenom, Integer idProfil)
     {
         this.login=login;
         this.Password=Password;
         this.Nom=Nom;
         this.Prenom=Prenom;
-
+        this.IdProfil = idProfil;
     }
     public Integer getIdUser() {
         return idUser;

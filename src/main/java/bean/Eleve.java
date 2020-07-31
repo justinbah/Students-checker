@@ -9,9 +9,10 @@ public class Eleve extends User{
         super(idUser,login,Password,Nom,Prenom,IdProfil) ;
         this.IdClasse=IdClasse;
     }
-    public Eleve(String login,String Password,String Nom,String Prenom)
+    public Eleve(String login,String Password,String Nom,String Prenom, Integer idProfil,Integer idClasse)
     {
-        super(login,Password,Nom,Prenom) ;
+        super(login,Password,Nom,Prenom,idProfil) ;
+        this.IdClasse = idClasse;
     }
 
     public Integer getIdClasse() {

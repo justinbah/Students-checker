@@ -44,14 +44,8 @@ public class DAORelClasseUser implements DAO<RelClassUser>{
 
             ps.executeUpdate();
 
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                relToReturn.setIdClasse(generatedKeys.getInt(1));
-                relToReturn.setIdUser(generatedKeys.getInt(2));
-            }
-            else {
-                throw new SQLException("Creating RelClassUser failed, no ID obtained.");
-            }
+            relToReturn.setIdClasse(rel.getIdClasse());
+            relToReturn.setIdUser(rel.getIdUser());
         }  catch(SQLException se) {
             LOG.error(se.getMessage());
         } catch (Exception e) {
@@ -268,5 +262,42 @@ public class DAORelClasseUser implements DAO<RelClassUser>{
             }
         }
         LOG.debug("Fin delete RelClassUser");
+    }
+
+    public List<RelClassUser> getAllByIdUser(Integer idUser) {
+        LOG.debug("Debut getAll getAllByIdUser");
+        List<RelClassUser> listeRel = new ArrayList<RelClassUser>();
+        try {
+            String sql = "SELECT * FROM rel_classe_user WHERE idUser = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setObject(1,idUser,Types.INTEGER);
+            rs = ps.executeQuery();
+
+            while(rs.next()) {
+                RelClassUser relToReturn = new RelClassUser();
+                relToReturn.setIdUser(rs.getInt("idUser"));
+                relToReturn.setIdClasse(rs.getInt("idClasse"));
+                listeRel.add(relToReturn);
+            }
+            LOG.debug("Fin getAll getAllByIdUser");
+            return listeRel;
+        }  catch(SQLException se) {
+            LOG.error(se.getMessage());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        } finally {
+            try {
+                DbUtils.close(rs);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+            try {
+                DbUtils.close(ps);
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+            }
+        }
+        LOG.debug("Fin getAll getAllByIdUser");
+        return null;
     }
 }
